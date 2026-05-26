@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -56,6 +57,16 @@ export async function uploadToIbon(pdfPath) {
       .locator("#QRcodeWrap .desc p")
       .textContent();
     const expiry = expiryText.trim();
+
+    const qrImg = page.locator("#QRcodeWrap").getByRole("img");
+    const qrSrc = await qrImg.getAttribute("src");
+    const qrPath = path.resolve("qrcode.png");
+
+    if (qrSrc.startsWith("data:image")) {
+      const base64Data = qrSrc.replace(/^data:image\/\w+;base64,/, "");
+      fs.writeFileSync(qrPath, Buffer.from(base64Data, "base64"));
+      console.log(`QR code saved to: ${qrPath}`);
+    }
 
     console.log(`ibon pickup code: ${code}`);
     console.log(`ibon expiry: ${expiry}`);
