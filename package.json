@@ -1,0 +1,16 @@
+{
+  "name": "auto-ibon-manychat",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "test:ibon": "node src/ibon-upload.js",
+    "test:manychat": "node src/manychat-update.js"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
