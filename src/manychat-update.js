@@ -47,6 +47,9 @@ async function setField(token, fieldName, fieldValue) {
   throw new Error(`ManyChat API failed after ${maxRetries} attempts for "${fieldName}"`);
 }
 
+const QR_BASE_URL =
+  "https://raw.githubusercontent.com/ArChung/auto-ibon-manychat/master/qrcode.png";
+
 export async function updateBotField(code, expiry) {
   const token = process.env.MANYCHAT_API_TOKEN;
   if (!token) {
@@ -57,6 +60,8 @@ export async function updateBotField(code, expiry) {
   if (expiry) {
     await setField(token, "ibon_expiry", expiry);
   }
+  const qrUrl = `${QR_BASE_URL}?v=${Date.now()}`;
+  await setField(token, "ibon_qrcode", qrUrl);
 }
 
 const __filename = fileURLToPath(import.meta.url);
