@@ -2,7 +2,7 @@ name: Upload to ibon & Update ManyChat
 
 on:
   schedule:
-    - cron: '0 1 */2 * *' # Every 2 days at UTC 01:00 (Taiwan 09:00)
+    - cron: '0 1 * * *' # Every day at UTC 01:00 (Taiwan 09:00)
   workflow_dispatch:
     inputs:
       pdf_path:
