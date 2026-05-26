@@ -52,8 +52,14 @@ export async function uploadToIbon(pdfPath) {
       throw new Error("Pickup code is empty");
     }
 
+    const expiryText = await page
+      .locator("#QRcodeWrap .desc p")
+      .textContent();
+    const expiry = expiryText.trim();
+
     console.log(`ibon pickup code: ${code}`);
-    return code;
+    console.log(`ibon expiry: ${expiry}`);
+    return { code, expiry };
   } catch (error) {
     await page.screenshot({ path: "error-screenshot.png" }).catch(() => {});
     throw error;
@@ -66,7 +72,7 @@ const __filename = fileURLToPath(import.meta.url);
 if (path.resolve(process.argv[1]) === __filename) {
   const pdfPath = process.argv[2] || "file/20260526-draw.pdf";
   uploadToIbon(pdfPath)
-    .then((code) => console.log(`Done. Code: ${code}`))
+    .then((result) => console.log(`Done. Code: ${result.code}, Expiry: ${result.expiry}`))
     .catch((err) => {
       console.error("Upload failed:", err.message);
       process.exit(1);

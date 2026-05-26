@@ -41,15 +41,15 @@ async function run() {
     try {
       console.log(`\n--- Attempt ${attempt}/${maxRetries} ---`);
 
-      const code = await uploadToIbon(pdfPath);
-      await updateBotField(code);
+      const { code, expiry } = await uploadToIbon(pdfPath);
+      await updateBotField(code, expiry);
 
-      console.log(`\nSuccess! ibon code: ${code}`);
+      console.log(`\nSuccess! ibon code: ${code}, expiry: ${expiry}`);
 
       if (process.env.GITHUB_OUTPUT) {
         fs.appendFileSync(
           process.env.GITHUB_OUTPUT,
-          `ibon_code=${code}\n`
+          `ibon_code=${code}\nibon_expiry=${expiry}\n`
         );
       }
 

@@ -3,12 +3,7 @@ import { fileURLToPath } from "url";
 
 const API_BASE = "https://api.manychat.com/fb/page";
 
-export async function updateBotField(code) {
-  const token = process.env.MANYCHAT_API_TOKEN;
-  if (!token) {
-    throw new Error("MANYCHAT_API_TOKEN environment variable is not set");
-  }
-
+async function setField(token, fieldName, fieldValue) {
   const maxRetries = 3;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -19,15 +14,15 @@ export async function updateBotField(code) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        field_name: "ibon_code",
-        field_value: code,
+        field_name: fieldName,
+        field_value: fieldValue,
       }),
     });
 
     if (res.ok) {
       const data = await res.json();
       if (data.status === "success") {
-        console.log(`ManyChat bot field updated to: ${code}`);
+        console.log(`ManyChat bot field "${fieldName}" updated to: ${fieldValue}`);
         return data;
       }
       throw new Error(`ManyChat API error: ${JSON.stringify(data)}`);
@@ -41,7 +36,7 @@ export async function updateBotField(code) {
     }
 
     console.log(
-      `ManyChat API attempt ${attempt}/${maxRetries} failed (${res.status}), retrying...`
+      `ManyChat API attempt ${attempt}/${maxRetries} for "${fieldName}" failed (${res.status}), retrying...`
     );
 
     if (attempt < maxRetries) {
@@ -49,7 +44,19 @@ export async function updateBotField(code) {
     }
   }
 
-  throw new Error(`ManyChat API failed after ${maxRetries} attempts`);
+  throw new Error(`ManyChat API failed after ${maxRetries} attempts for "${fieldName}"`);
+}
+
+export async function updateBotField(code, expiry) {
+  const token = process.env.MANYCHAT_API_TOKEN;
+  if (!token) {
+    throw new Error("MANYCHAT_API_TOKEN environment variable is not set");
+  }
+
+  await setField(token, "ibon_code", code);
+  if (expiry) {
+    await setField(token, "ibon_expiry", expiry);
+  }
 }
 
 const __filename = fileURLToPath(import.meta.url);
